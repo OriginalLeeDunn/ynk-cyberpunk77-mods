@@ -8,6 +8,7 @@ vanilla move and nothing new is added to the game. Requested in the comments of
 - **Version:** 0.1.0
 - **Game:** Cyberpunk 2077 2.5 (Phantom Liberty not required)
 - **Requires:** [Cyber Engine Tweaks](https://github.com/maximegmd/CyberEngineTweaks) 1.38+ and [redscript](https://github.com/jac3km4/redscript) 0.5.32+
+- **Download:** [Nexus Mods](https://www.nexusmods.com/cyberpunk2077/mods/36225) or [GitHub release](https://github.com/OriginalLeeDunn/ynk-cyberpunk77-mods/releases/tag/weapon-inspect-v0.1.0)
 
 ## Install
 Extract the zip into your Cyberpunk 2077 folder, so you end up with
