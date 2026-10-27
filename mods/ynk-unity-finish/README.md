@@ -12,7 +12,7 @@ name differ.
 - **Version:** 1.0.0
 - **Game:** Cyberpunk 2077 2.5 (Phantom Liberty not required)
 - **Requires:** [ArchiveXL](https://github.com/psiberx/cp2077-archive-xl) 1.28+, [TweakXL](https://github.com/psiberx/cp2077-tweak-xl) 1.12+ (and their requirement, RED4ext), and [Cyber Engine Tweaks](https://github.com/maximegmd/CyberEngineTweaks) to spawn the guns
-- **Download:** [GitHub release](https://github.com/OriginalLeeDunn/ynk-cyberpunk77-mods/releases/tag/ynk-unity-finish-v1.0.0)
+- **Download:** [Nexus Mods](https://www.nexusmods.com/cyberpunk2077/mods/36220) or [GitHub release](https://github.com/OriginalLeeDunn/ynk-cyberpunk77-mods/releases/tag/ynk-unity-finish-v1.0.0)
 
 ## Install
 Extract the zip into your Cyberpunk 2077 folder, so you end up with:
