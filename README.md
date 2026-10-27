@@ -1,37 +1,37 @@
-# YNK Tweaks: Unity Extended Magazine
+# YNK Cyberpunk 2077 Mods
 
-Doubles the magazine of the Unity pistol from **12 to 24 rounds**. It applies to every Unity
-variant (Default, Military, Neon, Angelica and the craftable versions), because they all share
-one base stat.
+Cyberpunk 2077 mods by **YooNeqK**, from small TweakXL edits up to Lua, redscript and asset mods.
+Each mod lives in its own folder under [`mods/`](mods/) and is released on GitHub and Nexus Mods.
 
-- **Version:** 1.0.0
-- **Game:** Cyberpunk 2077 2.5 (Phantom Liberty not required)
-- **Requires:** [TweakXL](https://github.com/psiberx/cp2077-tweak-xl) 1.12+ (and its requirement, RED4ext)
+| Mod | What it does | Type | Requires | Latest | Nexus |
+|---|---|---|---|---|---|
+| [Unity Extended Magazine](mods/unity-extended-magazine/) | Unity pistol magazine 12 -> 24 for every variant | TweakXL | TweakXL 1.12+ | 1.0.0 | [36134](https://www.nexusmods.com/cyberpunk2077/mods/36134) |
 
-## Install
-Extract the zip into your Cyberpunk 2077 folder, so you end up with
-`Cyberpunk 2077\r6\tweaks\YNK\unity-extended-mag.yaml`. Vortex and MO2 install it as-is.
+Game version: **Cyberpunk 2077 2.5**.
 
-Weapons you already carry may keep their old stats. Any Unity you pick up, buy or craft afterwards
-gets 24 rounds.
+## Installing a mod
+Download the zip from the mod's GitHub release or Nexus page and extract it into your
+`Cyberpunk 2077` folder. Vortex and MO2 install them as-is. Each mod's README lists its requirements.
 
-## Uninstall
-Delete `r6\tweaks\YNK\unity-extended-mag.yaml`.
+## Questions, bugs, ideas
+- Questions and ideas: [Discussions](https://github.com/OriginalLeeDunn/ynk-cyberpunk77-mods/discussions) (Q&A category)
+- Bugs: [open an issue](https://github.com/OriginalLeeDunn/ynk-cyberpunk77-mods/issues/new/choose) with your game version, mod version and the relevant log
 
-## How it works
-`Items.Base_Unity_Technical_Stats_inline2` is the stat modifier that adds `BaseStats.MagazineCapacityBase`
-(Additive, 12) to the Unity. The tweak sets its `value` to 24. You can check it in the
-Cyber Engine Tweaks console:
+## Repo layout
+```
+mods/<mod-name>/          one folder per mod; everything except README.md mirrors the game folder
+  README.md               what it does, requirements, install, changelog
+  r6/, archive/, bin/ ... the files that go into Cyberpunk 2077\
+tools/deploy.ps1          copy a mod into the local mod-lab game for testing
+tools/package.ps1         build the release zip for a mod
+```
 
-    print(TweakDB:GetFlat("Items.Base_Unity_Technical_Stats_inline2.value"))
+## How AI is used
+I make these mods together with an AI coding assistant (Claude, through Claude Code). The AI helps
+research game data, write code and docs, and package releases. I choose what each mod does, test
+everything in game, take the screenshots and decide what gets released. No AI-generated art, textures,
+models, audio or voice are used unless a mod's README says otherwise. Each mod's README states exactly
+what was AI-assisted.
 
-## Development
-The repo mirrors the game folder, so a release zip is just this tree:
-
-    r6/tweaks/YNK/*.yaml    TweakXL tweaks, loaded at game start
-
-Test loop: `.\deploy.ps1` copies `r6/` into the mod lab (`C:\Modding\Cyberpunk 2077`), then
-`cyber lab`. TweakXL logs (`red4ext\plugins\TweakXL\*.log`) report YAML errors with line numbers.
-
-## Changelog
-- **1.0.0** Unity base magazine 12 -> 24.
+## License
+[MIT](LICENSE). Credit is appreciated if you build on these mods.

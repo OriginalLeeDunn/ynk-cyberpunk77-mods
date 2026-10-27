@@ -1,0 +1,37 @@
+name: Bug report
+description: Something in one of the mods doesn't work as described
+labels: [bug]
+body:
+  - type: dropdown
+    id: mod
+    attributes:
+      label: Which mod?
+      options:
+        - Unity Extended Magazine
+        - Other / not sure
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Game version, mod version, and framework versions (RED4ext, TweakXL, CET, ...)
+      placeholder: "Game 2.5, mod 1.0.0, TweakXL 1.12.0, RED4ext 1.31.0"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log lines
+      description: For example red4ext/logs, red4ext/plugins/TweakXL/*.log, or the CET console
+      render: text
