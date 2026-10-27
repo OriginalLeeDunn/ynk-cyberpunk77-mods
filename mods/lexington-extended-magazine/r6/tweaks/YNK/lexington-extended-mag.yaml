@@ -1,0 +1,19 @@
+# YNK Tweaks - Lexington extended magazine
+# Doubles the Lexington pistol's base magazine for every variant.
+#
+# The 48 Lexington weapon records use three Technical stat groups. Each has one stat modifier that
+# sets BaseStats.MagazineCapacityBase (Additive); this edits all three. Found by walking every
+# gamedataWeaponItem_Record with "Lexington" in its ID; check one in the CET console with:
+#   print(TweakDB:GetFlat("Items.Base_Lexington_Technical_Stats_inline2.value"))
+
+# Default, Military, Neon, Pimp, Toygun, Wilson's, silenced, craftables: 20 -> 40
+Items.Base_Lexington_Technical_Stats_inline2:
+  value: 40
+
+# Krausser variants (Jago's, Jurij's, Prevention): 20 -> 40
+Items.Base_Lexington_Krausser_Technical_Stats_inline2:
+  value: 40
+
+# Rook (iconic): 30 -> 60
+Items.Base_Lexington_Rook_Technical_Stats_inline2:
+  value: 60
