@@ -7,7 +7,7 @@ Each mod lives in its own folder under [`mods/`](mods/) and is released on GitHu
 |---|---|---|---|---|---|
 | [Unity Extended Magazine](mods/unity-extended-magazine/) | Unity pistol magazine 12 -> 24 for every variant | TweakXL | TweakXL 1.12+ | 1.0.0 | [36134](https://www.nexusmods.com/cyberpunk2077/mods/36134) |
 | [Weapon Inspector](mods/weapon-inspector/) | Live stats of the held weapon in a CET window, plus temporary test changes | CET Lua | CET 1.38+ | 0.1.1 | [36138](https://www.nexusmods.com/cyberpunk2077/mods/36138) |
-| [Combat Tracker](mods/combat-tracker/) | Kills, headshots and top weapon per fight, shown on the HUD when combat ends | redscript | redscript 0.5.32+ | 0.1.0 (testing) | - |
+| [Combat Tracker](mods/combat-tracker/) | Kills, headshots and top weapon per fight, shown on the HUD when combat ends | redscript | redscript 0.5.32+ | 0.1.0 | (Nexus link soon) |
 
 Game version: **Cyberpunk 2077 2.5**.
 
