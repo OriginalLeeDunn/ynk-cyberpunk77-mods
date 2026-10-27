@@ -1,0 +1,23 @@
+# YNK Tweaks - Nue extended magazine
+# Doubles the Nue pistol's base magazine for every variant.
+#
+# The Nue family uses four Technical stat groups. Each has one stat modifier that sets
+# BaseStats.MagazineCapacityBase (Additive); this edits all four. Found with the ynk_explorer
+# CET dump; check one in the CET console with:
+#   print(TweakDB:GetFlat("Items.Base_Nue_Technical_Stats_inline2.value"))
+
+# Default, Military, Neon, Pimp, Boris, Jackie's (incl. La Chingona Dorada), craftables: 10 -> 20
+Items.Base_Nue_Technical_Stats_inline2:
+  value: 20
+
+# Arasaka 2020 / 2077 variants: 8 -> 16
+Items.Base_Nue_Arasaka_2020_Technical_Stats_inline2:
+  value: 16
+
+# Bree's Nue: 10 -> 20
+Items.Base_Nue_Bree_Technical_Stats_inline2:
+  value: 20
+
+# Maiko's Nue (burst fire, so its magazine is modifier 6): 10 -> 20
+Items.Base_Nue_Maiko_Technical_Stats_inline6:
+  value: 20
