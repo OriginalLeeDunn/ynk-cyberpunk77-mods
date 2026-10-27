@@ -12,6 +12,7 @@ Magazine page):
 - **Version:** 1.0.0
 - **Game:** Cyberpunk 2077 2.5 (Phantom Liberty not required)
 - **Requires:** [TweakXL](https://github.com/psiberx/cp2077-tweak-xl) 1.12+ (and its requirement, RED4ext)
+- **Download:** [Nexus Mods](https://www.nexusmods.com/cyberpunk2077/mods/36232) or [GitHub release](https://github.com/OriginalLeeDunn/ynk-cyberpunk77-mods/releases/tag/lexington-extended-magazine-v1.0.0)
 
 ## Install
 Extract the zip into your Cyberpunk 2077 folder, so you end up with
