@@ -1,0 +1,5 @@
+factories:
+  - ynk\weapons\unity_ynk\ynk_unity.csv
+localization:
+  onscreens:
+    en-us: ynk\weapons\unity_ynk\ynk_unity_finish.en-us.json
