@@ -5,7 +5,7 @@ per hit, fire rate, magazine and ammo, reload times, crit, headshot multiplier, 
 It also has buttons to **try temporary changes** (magazine x2, fire rate +50%, reload -50%) and remove
 them again. Test changes are never saved and are removed when the game closes.
 
-- **Version:** 0.1.0 (in development)
+- **Version:** 0.1.1
 - **Game:** Cyberpunk 2077 2.5
 - **Requires:** [Cyber Engine Tweaks](https://github.com/maximegmd/CyberEngineTweaks) 1.38+
 - **Download:** [Nexus Mods](https://www.nexusmods.com/cyberpunk2077/mods/36138) or [GitHub release](https://github.com/OriginalLeeDunn/ynk-cyberpunk77-mods/releases/tag/weapon-inspector-v0.1.0)
@@ -36,4 +36,5 @@ packaging, and picked stat names from a dump of the game's data. **Me:** chose t
 game, took the screenshots and decided what to release. **Not AI:** no AI-generated art, audio or voice.
 
 ## Changelog
+- **0.1.1** Crit chance and crit damage now come from V (in 2.x crit lives on the character; the weapon's own value is usually 0). Stat values line up in a column.
 - **0.1.0** First version: live stats window, ammo counter, record ID copy, temporary test modifiers.
