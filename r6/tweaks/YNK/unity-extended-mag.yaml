@@ -1,0 +1,11 @@
+# YNK Tweaks - Unity extended magazine
+# Doubles the Unity pistol's base magazine from 12 to 24.
+#
+# Items.Base_Unity_Technical_Stats_inline2 is the stat modifier that sets
+# BaseStats.MagazineCapacityBase (Additive, 12) for every Unity variant
+# (Default, Military, Neon, Angelica, craftables), so one edit covers them all.
+# Found with the ynk_explorer CET dump; check it in the CET console with:
+#   print(TweakDB:GetFlat("Items.Base_Unity_Technical_Stats_inline2.value"))
+
+Items.Base_Unity_Technical_Stats_inline2:
+  value: 24
