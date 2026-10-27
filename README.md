@@ -10,6 +10,7 @@ Each mod lives in its own folder under [`mods/`](mods/) and is released on GitHu
 | [Combat Tracker](mods/combat-tracker/) | Kills, headshots and top weapon per fight, shown on the HUD when combat ends | redscript | redscript 0.5.32+ | 0.1.0 | [36147](https://www.nexusmods.com/cyberpunk2077/mods/36147) |
 | [Nue Extended Magazine](mods/nue-extended-magazine/) | Nue pistol magazine doubled for every variant (10 -> 20, Arasaka 8 -> 16) | TweakXL | TweakXL 1.12+ | 1.0.0 | [36149](https://www.nexusmods.com/cyberpunk2077/mods/36149) |
 | [Unity Edition](mods/ynk-unity-finish/) | Two Unity pistols in the YooNeqK colorway: black, rust orange and neon green | ArchiveXL + TweakXL | ArchiveXL 1.28+, TweakXL 1.12+, CET | 1.0.0 | [36220](https://www.nexusmods.com/cyberpunk2077/mods/36220) |
+| [Weapon Inspect](mods/weapon-inspect/) | Press a key to inspect the weapon in your hands (the game's own idle-break animation) | CET Lua + redscript | CET 1.38+, redscript 0.5.32+ | 0.1.0 | - |
 
 Game version: **Cyberpunk 2077 2.5**.
 
