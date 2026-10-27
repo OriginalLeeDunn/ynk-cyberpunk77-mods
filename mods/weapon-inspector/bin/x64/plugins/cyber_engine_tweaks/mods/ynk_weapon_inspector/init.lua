@@ -6,7 +6,7 @@
 -- bottom of the window instead of breaking the mod.
 
 local Inspector = {
-    version = "0.1.0",
+    version = "0.1.1",
     overlayOpen = false,
     pinned = false,          -- keep the window visible when the CET overlay is closed
     refreshEvery = 0.25,     -- seconds between stat reads (reading every frame is wasteful)
@@ -16,22 +16,24 @@ local Inspector = {
     lastError = nil,
 }
 
--- Stats shown in the window, in order. Names are gamedataStatType values, checked against the
--- game's own TweakDB (BaseStats.<name>) for 2.5.
+-- Stats shown in the window, in order: { stat, label, format, source }. Names are gamedataStatType
+-- values, checked against the game's own TweakDB (BaseStats.<name>) for 2.5. Source "player" reads
+-- the stat from V instead of the weapon: in 2.x crit lives on the character, and a weapon's own
+-- CritChance/CritDamage is usually 0.
 local STATS = {
-    { "EffectiveDPS",            "DPS",                "%.1f" },
-    { "EffectiveDamagePerHit",   "Damage per hit",     "%.1f" },
-    { "AttacksPerSecond",        "Attacks per second", "%.2f" },
-    { "MagazineCapacity",        "Magazine",           "%.0f" },
-    { "ReloadTime",              "Reload (s)",         "%.2f" },
-    { "EmptyReloadTime",         "Empty reload (s)",   "%.2f" },
-    { "CritChance",              "Crit chance (%)",    "%.1f" },
-    { "CritDamage",              "Crit damage (%)",    "%.0f" },
-    { "HeadshotDamageMultiplier","Headshot multiplier","%.2f" },
-    { "EffectiveRange",          "Effective range (m)","%.1f" },
-    { "MaximumRange",            "Max range (m)",      "%.1f" },
-    { "RecoilKickMax",           "Recoil kick (max)",  "%.2f" },
-    { "SpreadMaxX",              "Spread (max)",       "%.2f" },
+    { "EffectiveDPS",            "DPS",                 "%.1f" },
+    { "EffectiveDamagePerHit",   "Damage per hit",      "%.1f" },
+    { "AttacksPerSecond",        "Attacks per second",  "%.2f" },
+    { "MagazineCapacity",        "Magazine",            "%.0f" },
+    { "ReloadTime",              "Reload (s)",          "%.2f" },
+    { "EmptyReloadTime",         "Empty reload (s)",    "%.2f" },
+    { "CritChance",              "Crit chance (V, %)",  "%.1f", "player" },
+    { "CritDamage",              "Crit damage (V, %)",  "%.0f", "player" },
+    { "HeadshotDamageMultiplier","Headshot multiplier", "%.2f" },
+    { "EffectiveRange",          "Effective range (m)", "%.1f" },
+    { "MaximumRange",            "Max range (m)",       "%.1f" },
+    { "RecoilKickMax",           "Recoil kick (max)",   "%.2f" },
+    { "SpreadMaxX",              "Spread (max)",        "%.2f" },
 }
 
 local function try(fn, ...)
@@ -52,9 +54,9 @@ local function getHeldWeapon()
     end)
 end
 
-local function readStat(weapon, statName)
+local function readStat(entity, statName)
     return try(function()
-        return Game.GetStatsSystem():GetStatValue(weapon:GetEntityID(), gamedataStatType[statName])
+        return Game.GetStatsSystem():GetStatValue(entity:GetEntityID(), gamedataStatType[statName])
     end)
 end
 
@@ -70,7 +72,11 @@ local function snapshot()
         end)
     end
     snap.ammo = try(function() return WeaponObject.GetMagazineAmmoCount(weapon) end)
-    for _, s in ipairs(STATS) do snap.stats[s[1]] = readStat(weapon, s[1]) end
+    local player = Game.GetPlayer()
+    for _, s in ipairs(STATS) do
+        local source = (s[4] == "player") and player or weapon
+        snap.stats[s[1]] = source and readStat(source, s[1]) or nil
+    end
     return snap
 end
 
@@ -130,8 +136,13 @@ registerForEvent("onDraw", function()
         ImGui.Separator()
         ImGui.Text("Ammo in magazine: " .. fmt(w.ammo, "%.0f") .. " / " .. fmt(w.stats.MagazineCapacity, "%.0f"))
         ImGui.Separator()
+        -- Two columns: the value column starts at a fixed x (scaled with the font, so it holds at any
+        -- UI scale). The ImGui font is proportional, so padding labels with spaces can't align it.
+        local valueX = ImGui.GetFontSize() * 11
         for _, s in ipairs(STATS) do
-            ImGui.Text(string.format("%-20s %s", s[2], fmt(w.stats[s[1]], s[3])))
+            ImGui.Text(s[2])
+            ImGui.SameLine(valueX)
+            ImGui.Text(fmt(w.stats[s[1]], s[3]))
         end
         ImGui.Separator()
         ImGui.Text("Try a change (temporary, not saved):")
