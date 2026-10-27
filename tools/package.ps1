@@ -1,14 +1,16 @@
 # Build the release zip for one mod: the game-folder tree plus the mod's README.
-# Usage: .\tools\package.ps1 -Mod unity-extended-magazine -Version 1.0.0 [-Name 'YNK-Unity-Extended-Magazine']
+# Usage: .\tools\package.ps1 -Mod unity-extended-magazine -Version 1.0.0 [-Name 'YNK-Unity-Extended-Magazine'] [-Src <staged tree>]
 param(
     [Parameter(Mandatory = $true)][string]$Mod,
     [Parameter(Mandatory = $true)][string]$Version,
     [string]$Name = '',
-    [string]$OutDir = ''
+    [string]$OutDir = '',
+    # Staged game-folder tree to zip instead of mods\<Mod> (for mods built from a WolvenKit project)
+    [string]$Src = ''
 )
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot
-$src = Join-Path $root "mods\$Mod"
+$src = if ($Src) { (Resolve-Path $Src).Path } else { Join-Path $root "mods\$Mod" }
 if (-not (Test-Path $src)) { throw "no such mod: $src" }
 if (-not $Name) { $Name = 'YNK-' + ((($Mod -split '-') | ForEach-Object { $_.Substring(0,1).ToUpper() + $_.Substring(1) }) -join '-') }
 if (-not $OutDir) { $OutDir = Join-Path $root 'dist' }

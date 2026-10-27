@@ -1,0 +1,13 @@
+# YNK Unity finish: Unitys with the YooNeqK paint job.
+# Same stats as the standard Unity; only the look and the name differ.
+Items.Preset_Unity_YNK:
+  $base: Items.Preset_Unity_Default
+  appearanceResourceName: Preset_YNK_Unity
+  displayName: LocKey#ynk-unity-finish-name
+  localizedDescription: LocKey#ynk-unity-finish-desc
+
+Items.Preset_Unity_YNK_Green:
+  $base: Items.Preset_Unity_Default
+  appearanceResourceName: Preset_YNK_Unity_Green
+  displayName: LocKey#ynk-unity-finish-green-name
+  localizedDescription: LocKey#ynk-unity-finish-desc
