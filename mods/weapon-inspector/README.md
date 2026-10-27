@@ -8,6 +8,7 @@ them again. Test changes are never saved and are removed when the game closes.
 - **Version:** 0.1.0 (in development)
 - **Game:** Cyberpunk 2077 2.5
 - **Requires:** [Cyber Engine Tweaks](https://github.com/maximegmd/CyberEngineTweaks) 1.38+
+- **Download:** [Nexus Mods](https://www.nexusmods.com/cyberpunk2077/mods/36138) or [GitHub release](https://github.com/OriginalLeeDunn/ynk-cyberpunk77-mods/releases/tag/weapon-inspector-v0.1.0)
 
 ## Use
 Open the CET overlay (`~` by default) with a weapon drawn. Tick "Keep visible when the overlay is
