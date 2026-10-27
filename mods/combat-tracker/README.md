@@ -10,6 +10,7 @@ A kill outside combat (a stealth kill, say) gets its own message straight away.
 - **Version:** 0.1.0
 - **Game:** Cyberpunk 2077 2.5
 - **Requires:** [redscript](https://github.com/jac3km4/redscript) 0.5.32+
+- **Download:** [Nexus Mods](https://www.nexusmods.com/cyberpunk2077/mods/36147) or [GitHub release](https://github.com/OriginalLeeDunn/ynk-cyberpunk77-mods/releases/tag/combat-tracker-v0.1.0)
 
 ## Install
 Extract the zip into your `Cyberpunk 2077` folder so you get `r6\scripts\YNK\CombatTracker.reds`.
