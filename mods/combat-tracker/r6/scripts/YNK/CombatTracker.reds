@@ -143,12 +143,15 @@ public func YnkShowFightSummary() -> Void {
   ArrayClear(this.ynkWeaponKills);
 }
 
-// Same HUD warning message the game uses in PlayerPuppet.SetWarningMessage.
+// Same HUD warning message the game uses in PlayerPuppet.SetWarningMessage. Neutral type, because
+// without a type WarningMessageGameController shows the red "attention" style; the slot is shared
+// with the game's own warnings, so keep it up a bit longer than the game's 5 seconds.
 @addMethod(PlayerPuppet)
 public func YnkShowMessage(text: String) -> Void {
   let msg: SimpleScreenMessage;
   msg.isShown = true;
-  msg.duration = 5.00;
+  msg.duration = 8.00;
+  msg.type = SimpleMessageType.Neutral;
   msg.message = text;
   GameInstance.GetBlackboardSystem(this.GetGame()).Get(GetAllBlackboardDefs().UI_Notifications).SetVariant(GetAllBlackboardDefs().UI_Notifications.WarningMessage, ToVariant(msg), true);
 }
