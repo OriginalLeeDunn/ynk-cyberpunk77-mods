@@ -10,7 +10,7 @@
 -- Bind the keys in the Cyber Engine Tweaks overlay: Bindings > YNK Weapon Inspect.
 
 local Inspect = {
-    version = "0.3.0",
+    version = "0.3.1",
     cooldown = 1.5,   -- seconds between presses, so mashing the key doesn't restart the animation
     lastPress = -100,
     autoLower = false,   -- saved in settings.json next to this file

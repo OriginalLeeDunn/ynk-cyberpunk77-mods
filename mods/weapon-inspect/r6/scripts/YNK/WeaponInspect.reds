@@ -142,12 +142,15 @@ public func YnkSetAutoLower(enabled: Bool) -> Void {
 
 // ── controller: double-tap D-pad Down ────────────────────────────────────────────────────────
 
-// The weapon state machine can't read the UI D-pad action, so the player listens for it directly
+// The weapon state machine can't read the UI D-pad action, so the player listens for it directly.
+// The original is called as a statement, not assigned: another mod that wraps OnGameAttached
+// without a return type turns wrappedMethod() into Void, and assigning that fails to compile.
+// Vanilla returns false here (it has no return statement), so that's what this returns too.
 @wrapMethod(PlayerPuppet)
 protected cb func OnGameAttached() -> Bool {
-  let result: Bool = wrappedMethod();
+  wrappedMethod();
   this.RegisterInputListener(this, n"CycleObjectives");
-  return result;
+  return false;
 }
 
 @wrapMethod(PlayerPuppet)

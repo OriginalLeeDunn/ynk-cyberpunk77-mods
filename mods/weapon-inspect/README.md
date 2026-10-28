@@ -6,10 +6,10 @@ vanilla move and nothing new is added to the game. A second key lowers the weapo
 own "safe" stance, an optional auto-lower does it for you when you're idle, and it works on
 controller too. Requested in the comments of [YNK Weapon Inspector](../weapon-inspector/).
 
-- **Version:** 0.3.0
+- **Version:** 0.3.1
 - **Game:** Cyberpunk 2077 2.5 (Phantom Liberty not required)
 - **Requires:** [Cyber Engine Tweaks](https://github.com/maximegmd/CyberEngineTweaks) 1.38+ and [redscript](https://github.com/jac3km4/redscript) 0.5.32+
-- **Download:** [Nexus Mods](https://www.nexusmods.com/cyberpunk2077/mods/36225) or [GitHub release](https://github.com/OriginalLeeDunn/ynk-cyberpunk77-mods/releases/tag/weapon-inspect-v0.3.0)
+- **Download:** [Nexus Mods](https://www.nexusmods.com/cyberpunk2077/mods/36225) or [GitHub release](https://github.com/OriginalLeeDunn/ynk-cyberpunk77-mods/releases/tag/weapon-inspect-v0.3.1)
 
 ## Install
 Extract the zip into your Cyberpunk 2077 folder, so you end up with
@@ -70,6 +70,8 @@ and drove the test game.
 the game's own.
 
 ## Changelog
+- **0.3.1** Fixes "can't coerce 'Void' into 'Bool'" (redscript compilation failed) when another mod also
+  wraps `PlayerPuppet.OnGameAttached` without a return type. Reported by 235francis.
 - **0.3.0** Fixes raising the weapon in public areas (the second press now raises and inspects), the
   inspect key also raises a lowered weapon, optional auto-lower after 3 s idle, works alongside
   Always First Equip. Reported and suggested by sdskif.
