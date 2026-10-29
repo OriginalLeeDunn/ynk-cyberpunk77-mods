@@ -16,6 +16,14 @@ message *"Militech Canto Mk.6 crafting spec added (Rare/Epic/Legendary)"*. Tier 
 rule: Rare below level 30, Epic at 30-39, Legendary at 40+. Once per save; does nothing if the quest
 already gave you the recipe, you own the deck, or Phantom Liberty isn't installed.
 
+## What you need to craft the deck
+The spec is only the blueprint. For the **Rare** deck (the crafting menu shows the exact amounts):
+- 1 **decoded Cerberus core**: picked up from the Cerberus wreck in *Somewhat Damaged* and decoded by Yoko
+  in *This Corrosion*. The Erebus SMG uses the same core, so you can build one or the other.
+- 50 Rare Components and 30 Rare Quickhack Components.
+
+Epic and Legendary recipes use more and higher-tier parts. The deck unlocks the **Blackwall Gateway** quickhack.
+
 ## How it's made
 `scripts\YNK\CantoBlueprint.script` is written in the game's native script language as accepted by
 CDPR's mod.io compiler, and uses one `@postfix` and `@addMethod` only (nothing is replaced). Every added
