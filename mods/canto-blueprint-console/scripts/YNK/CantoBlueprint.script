@@ -1,0 +1,116 @@
+// YNK Canto Blueprint: gives you the crafting spec for the Militech Canto Mk.6 cyberdeck (Blackwall
+// Gateway) if you never got it. The game hands it out as a Phantom Liberty quest reward and it is
+// missable (side with Songbird in "Firestarter" and the blueprint is locked away), and consoles have no
+// way to add it. This adds the same recipe item the quest would have given, once, and you still craft the
+// deck yourself with the usual materials.
+// - Recipe tier follows the game's own rule for this reward: Rare below level 30, Epic 30-39, Legendary 40+.
+// - Runs once per save (a quest fact remembers it). Does nothing if the quest already gave you the recipe,
+//   if you already own the deck, or if Phantom Liberty isn't installed (it tries again next load).
+// - Console-safe: no frameworks, only wrap/postfix patches, nothing replaced. Every name is prefixed
+//   YnkCanto so it can never collide with another mod's added methods.
+
+constexpr function YnkCantoDelay() : Float { return 8.0; }             // seconds after loading before the check
+constexpr function YnkCantoDoneFact() : CName { return 'ynk_canto_blueprint_done'; }  // 1 = handled for this save
+constexpr function YnkCantoDebug() : Bool { return false; }            // true shows a message for each skipped case
+
+class YnkCantoCallback extends DelayCallback
+{
+	var m_player : weak< PlayerPuppet >;
+
+	public export override function Call()
+	{
+		if( m_player )
+		{
+			m_player.YnkCantoCheck();
+		}
+	}
+}
+
+@addMethod(PlayerPuppet)
+function YnkCantoNotify( text : String )
+{
+	var msg : SimpleScreenMessage;
+	var bb : IBlackboard;
+	msg.message = text;
+	msg.isShown = true;
+	msg.duration = 6.0;
+	msg.type = SimpleMessageType.Neutral;
+	bb = GameInstance.GetBlackboardSystem( GetGame() ).Get( GetAllBlackboardDefs().UI_Notifications );
+	bb.SetVariant( GetAllBlackboardDefs().UI_Notifications.OnscreenMessage, msg, true );
+}
+
+@addMethod(PlayerPuppet)
+function YnkCantoOwns( itemName : TweakDBID ) : Bool
+{
+	return GameInstance.GetTransactionSystem( GetGame() ).HasItem( this, ItemID.FromTDBID( itemName ) );
+}
+
+// Runs a few seconds after a save loads (or a new game starts).
+@addMethod(PlayerPuppet)
+function YnkCantoCheck()
+{
+	var quests : QuestsSystem = GameInstance.GetQuestsSystem( GetGame() );
+	var level : Float;
+	var recipe : TweakDBID;
+	var tier : String;
+
+	if( quests.GetFact( YnkCantoDoneFact() ) > 0 )
+	{
+		return;
+	}
+	// no Phantom Liberty: the item doesn't exist, so do nothing and look again next load
+	if( !( TweakDBInterface.GetItemRecord( T"Items.Recipe_Rare_HauntedCyberdeck" ) ) )
+	{
+		if( YnkCantoDebug() )
+		{
+			YnkCantoNotify( "Canto Blueprint: Phantom Liberty not found" );
+		}
+		return;
+	}
+	// the quest already gave the recipe, or the deck is already yours
+	if( quests.GetFact( 'haunted_deck_recipe_acquired' ) > 0
+		|| YnkCantoOwns( T"Items.Recipe_Rare_HauntedCyberdeck" ) || YnkCantoOwns( T"Items.Recipe_Epic_HauntedCyberdeck" ) || YnkCantoOwns( T"Items.Recipe_Legendary_HauntedCyberdeck" )
+		|| YnkCantoOwns( T"Items.HauntedCyberdeck_Rare" ) || YnkCantoOwns( T"Items.HauntedCyberdeck_Epic" ) || YnkCantoOwns( T"Items.HauntedCyberdeck_Legendary" ) )
+	{
+		quests.SetFact( YnkCantoDoneFact(), 1 );
+		if( YnkCantoDebug() )
+		{
+			YnkCantoNotify( "Canto Blueprint: you already have it" );
+		}
+		return;
+	}
+
+	level = GameInstance.GetStatsSystem( GetGame() ).GetStatValue( GetEntityID(), gamedataStatType.Level );
+	if( level >= 40.0 )
+	{
+		recipe = T"Items.Recipe_Legendary_HauntedCyberdeck";
+		tier = "Legendary";
+	}
+	else
+	{
+		if( level >= 30.0 )
+		{
+			recipe = T"Items.Recipe_Epic_HauntedCyberdeck";
+			tier = "Epic";
+		}
+		else
+		{
+			recipe = T"Items.Recipe_Rare_HauntedCyberdeck";
+			tier = "Rare";
+		}
+	}
+	if( GameInstance.GetTransactionSystem( GetGame() ).GiveItemByTDBID( this, recipe, 1 ) )
+	{
+		quests.SetFact( YnkCantoDoneFact(), 1 );
+		YnkCantoNotify( "Militech Canto Mk.6 crafting spec added (" + tier + ")" );
+	}
+}
+
+// Every time the player enters the world (new game or loading a save): schedule the one-time check.
+@postfix(PlayerPuppet)
+function OnGameAttached()
+{
+	var callback : YnkCantoCallback = new YnkCantoCallback;
+	callback.m_player = this;
+	GameInstance.GetDelaySystem( GetGame() ).DelayCallback( callback, YnkCantoDelay(), false );
+}
