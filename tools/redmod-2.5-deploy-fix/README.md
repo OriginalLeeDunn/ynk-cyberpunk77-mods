@@ -25,7 +25,8 @@ Nothing in the game's own scripts uses them.
 apply. This fixes the compile itself, so REDmod script mods work again.
 
 ## Use
-1. Download `Fix-REDmod-Deploy.ps1` from the [release](https://github.com/OriginalLeeDunn/ynk-cyberpunk77-mods/releases/tag/redmod-deploy-fix-v1.0.0).
+1. Download `Fix-REDmod-Deploy.ps1` from the [release](https://github.com/OriginalLeeDunn/ynk-cyberpunk77-mods/releases/tag/redmod-deploy-fix-v1.0.0)
+   or [Nexus Mods](https://www.nexusmods.com/cyberpunk2077/mods/36429).
 2. Right-click it > **Run with PowerShell**, or from a PowerShell window:
    ```powershell
    powershell -ExecutionPolicy Bypass -File .\Fix-REDmod-Deploy.ps1

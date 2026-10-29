@@ -17,9 +17,9 @@ Each mod lives in its own folder under [`mods/`](mods/) and is released on GitHu
 Game version: **Cyberpunk 2077 2.5**.
 
 ### Tools
-| Tool | What it does |
-|---|---|
-| [REDmod 2.5 Deploy Fix](tools/redmod-2.5-deploy-fix/) | Fixes REDmod deploy failing since 2.5 with `Imported classes (like 'ISerializable') must derive from something` |
+| Tool | What it does | Latest | Nexus |
+|---|---|---|---|
+| [REDmod 2.5 Deploy Fix](tools/redmod-2.5-deploy-fix/) | Fixes REDmod deploy failing since 2.5 with `Imported classes (like 'ISerializable') must derive from something` | 1.0.0 | [36429](https://www.nexusmods.com/cyberpunk2077/mods/36429) |
 
 ## Installing a mod
 Download the zip from the mod's GitHub release or Nexus page and extract it into your

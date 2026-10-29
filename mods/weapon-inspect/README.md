@@ -11,6 +11,10 @@ controller too. Requested in the comments of [YNK Weapon Inspector](../weapon-in
 - **Requires:** [Cyber Engine Tweaks](https://github.com/maximegmd/CyberEngineTweaks) 1.38+ and [redscript](https://github.com/jac3km4/redscript) 0.5.32+
 - **Download:** [Nexus Mods](https://www.nexusmods.com/cyberpunk2077/mods/36225) or [GitHub release](https://github.com/OriginalLeeDunn/ynk-cyberpunk77-mods/releases/tag/weapon-inspect-v0.3.1)
 
+> **Keyboard keys start unbound.** In game, open the Cyber Engine Tweaks overlay, go to
+> **Bindings > YNK Weapon Inspect** and set **Inspect weapon** to a key (see [Install](#install)).
+> On a controller there's nothing to bind: double-tap **D-pad Down**.
+
 ## Install
 Extract the zip into your Cyberpunk 2077 folder, so you end up with
 `bin\x64\plugins\cyber_engine_tweaks\mods\ynk_weapon_inspect\init.lua` and `r6\scripts\YNK\WeaponInspect.reds`.
