@@ -16,6 +16,11 @@ Each mod lives in its own folder under [`mods/`](mods/) and is released on GitHu
 
 Game version: **Cyberpunk 2077 2.5**.
 
+### Tools
+| Tool | What it does |
+|---|---|
+| [REDmod 2.5 Deploy Fix](tools/redmod-2.5-deploy-fix/) | Fixes REDmod deploy failing since 2.5 with `Imported classes (like 'ISerializable') must derive from something` |
+
 ## Installing a mod
 Download the zip from the mod's GitHub release or Nexus page and extract it into your
 `Cyberpunk 2077` folder. Vortex and MO2 install them as-is. Each mod's README lists its requirements.
@@ -33,6 +38,7 @@ mods/ynk-unity-finish/    asset mods are WolvenKit projects instead: build/ scri
                           source/archive from game files and stage the release zip
 tools/deploy.ps1          copy a mod into the local mod-lab game for testing
 tools/package.ps1         build the release zip for a mod
+tools/redmod-2.5-deploy-fix/  patcher for REDmod's 2.5 script compile error
 ```
 
 ## How AI is used
