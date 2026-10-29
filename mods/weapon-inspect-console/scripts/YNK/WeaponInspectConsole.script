@@ -1,0 +1,273 @@
+// YNK Weapon Inspect (console edition): weapon inspect, lower-weapon and auto-lower, controller only.
+// Same weapon behaviour as the PC mod (mods/weapon-inspect), written in the game's own script language
+// for mod.io, so it can ship to PS5, Xbox and Switch 2, where script extenders are not allowed.
+// Differences from the PC mod, all forced by the platform:
+// - no CET: no keyboard hotkeys; everything runs from double-tap D-pad Down.
+// - hooks use @wrapMethod / @postfix (the original runs untouched; inside a wrap the original is
+//   called by its own name), so no vanilla code is copied and other mods can hook the same methods.
+// - the D-pad is read by a small listener object instead of hooking PlayerPuppet (whose input
+//   handlers are large and widely hooked). It is registered the first time a weapon is drawn.
+// - the auto-lower setting is a quest fact, saved with the game (CET kept a settings.json).
+// - Always First Equip is a PC mod, so this always uses its own lowered state.
+// Controls (double-tap D-pad Down; a single tap still cycles the tracked objective):
+// - weapon drawn: lower it; if it's lowered (by this mod or the game), raise it and inspect.
+// - no weapon drawn: toggle auto-lower on/off.
+constexpr function YnkDoubleTapWindow() : Float { return 0.35; }  // max seconds between the two D-pad Down taps
+constexpr function YnkInspectTimeout() : Float { return 4.0; }    // drop an inspect the weapon couldn't act on (e.g. reloading)
+constexpr function YnkInspectDelay() : Float { return 0.25; }     // seconds in Ready before the animation, after a raise
+constexpr function YnkAutoLowerDelay() : Float { return 3.0; }    // seconds without aiming or shooting before auto-lower
+constexpr function YnkInspectHold() : Float { return 3.5; }       // seconds the weapon stays up for the inspect animation
+constexpr function YnkAutoLowerFact() : CName { return 'ynk_weapon_inspect_auto_lower'; } // 1 = on, saved with the game
+
+// Listens for the D-pad Down release ("CycleObjectives") without consuming it.
+class YnkWeaponInspectPadListener extends IScriptable
+{
+	var m_player : weak< PlayerPuppet >;
+	var m_lastTap : Float;
+
+	protected event OnAction( action : ListenerAction, consumer : ListenerActionConsumer )
+	{
+		var now : Float;
+		if( !( m_player ) || ListenerAction.GetName( action ) != 'CycleObjectives' || ListenerAction.GetType( action ) != gameinputActionType.BUTTON_RELEASED )
+		{
+			return false;
+		}
+		now = m_player.YnkNow();
+		if( ( m_lastTap > 0.0 ) && ( ( now - m_lastTap ) <= YnkDoubleTapWindow() ) )
+		{
+			m_lastTap = 0.0;
+			if( m_player.YnkHasWeapon() )
+			{
+				m_player.YnkCycle();
+			}
+			else
+			{
+				m_player.YnkToggleAutoLower();
+			}
+		}
+		else
+		{
+			m_lastTap = now;
+		}
+		return false;
+	}
+}
+
+@addField(PlayerPuppet)
+var ynkPadListener : YnkWeaponInspectPadListener;
+
+@addField(PlayerPuppet)
+var ynkInspectRequestedAt : Float;   // sim time of a pending inspect; 0 = none pending
+
+@addField(PlayerPuppet)
+var ynkLowered : Bool;               // lowered by this mod
+
+@addField(PlayerPuppet)
+var ynkReleaseRequested : Bool;      // leave public safe on the next decision
+
+@addField(PlayerPuppet)
+var ynkLastActive : Float;           // sim time of the last aim, shot or combat tick
+
+@addField(PlayerPuppet)
+var ynkHoldReadyUntil : Float;       // keep the weapon up until then, so an inspect isn't cut short
+
+@addMethod(PlayerPuppet)
+public function YnkEnsurePadListener()
+{
+	if( !( ynkPadListener ) )
+	{
+		ynkPadListener = new YnkWeaponInspectPadListener;
+		ynkPadListener.m_player = this;
+		RegisterInputListener( ynkPadListener, 'CycleObjectives' );
+		YnkNotify( "YNK Weapon Inspect ready: double-tap D-pad Down" );
+	}
+}
+
+@addMethod(PlayerPuppet)
+public function YnkNow() : Float
+{
+	return EngineTime.ToFloat( GameInstance.GetSimTime( GetGame() ) );
+}
+
+@addMethod(PlayerPuppet)
+public function YnkHasWeapon() : Bool
+{
+	return GameInstance.GetTransactionSystem( GetGame() ).GetItemInSlot( this, T"AttachmentSlots.WeaponRight" ) != NULL;
+}
+
+@addMethod(PlayerPuppet)
+public function YnkSetLowered( lowered : Bool )
+{
+	if( !( lowered ) && ynkLowered )
+	{
+		ynkReleaseRequested = true;
+	}
+	if( lowered )
+	{
+		ynkReleaseRequested = false;
+	}
+	ynkLowered = lowered;
+}
+
+// The weapon state the game itself reports: 6 = Safe / public safe (set by SafeEvents and PublicSafeEvents).
+@addMethod(PlayerPuppet)
+public function YnkGameLowered() : Bool
+{
+	var bb : IBlackboard;
+	bb = GameInstance.GetBlackboardSystem( GetGame() ).GetLocalInstanced( GetEntityID(), GetAllBlackboardDefs().PlayerStateMachine );
+	return bb && ( bb.GetInt( GetAllBlackboardDefs().PlayerStateMachine.RightWeapon ) == 6 );
+}
+
+@addMethod(PlayerPuppet)
+public function YnkInspectPending() : Bool
+{
+	return ( ynkInspectRequestedAt > 0.0 ) && ( ( YnkNow() - ynkInspectRequestedAt ) <= YnkInspectTimeout() );
+}
+
+@addMethod(PlayerPuppet)
+public function YnkAutoLower() : Bool
+{
+	return GameInstance.GetQuestsSystem( GetGame() ).GetFact( YnkAutoLowerFact() ) > 0;
+}
+
+// Inspect the weapon; if it is lowered (by this mod or by the game), raise it first.
+@addMethod(PlayerPuppet)
+public function YnkRequestInspect()
+{
+	if( ynkLowered )
+	{
+		YnkSetLowered( false );
+	}
+	ynkReleaseRequested = true;
+	ynkInspectRequestedAt = YnkNow();
+}
+
+// One-button flow: lowered (by this mod or the game) -> raise and inspect; otherwise lower.
+@addMethod(PlayerPuppet)
+public function YnkCycle()
+{
+	if( ynkLowered || YnkGameLowered() )
+	{
+		YnkRequestInspect();
+	}
+	else
+	{
+		YnkSetLowered( true );
+	}
+}
+
+@addMethod(PlayerPuppet)
+public function YnkToggleAutoLower()
+{
+	var on : Bool;
+	on = !( YnkAutoLower() );
+	GameInstance.GetQuestsSystem( GetGame() ).SetFact( YnkAutoLowerFact(), ( ( on ) ? ( 1 ) : ( 0 ) ) );
+	ynkLastActive = YnkNow();
+	YnkNotify( ( ( on ) ? ( "Auto-lower weapon: ON" ) : ( "Auto-lower weapon: OFF" ) ) );
+}
+
+@addMethod(PlayerPuppet)
+public function YnkNotify( text : String )
+{
+	var msg : SimpleScreenMessage;
+	var bb : IBlackboard;
+	msg.message = text;
+	msg.isShown = true;
+	msg.duration = 2.0;
+	msg.type = SimpleMessageType.Neutral;
+	bb = GameInstance.GetBlackboardSystem( GetGame() ).Get( GetAllBlackboardDefs().UI_Notifications );
+	bb.SetVariant( GetAllBlackboardDefs().UI_Notifications.OnscreenMessage, msg, true );
+}
+
+// -- hooks on the weapon state machine ------------------------------------------------------------
+
+// Lowered by this mod: force the game's own "safe" stance. Aiming, shooting or combat raises it again.
+@wrapMethod(DefaultTransition)
+function IsSafeStateForced( const stateContext : StateContext, const scriptInterface : StateGameScriptInterface ) : Bool
+{
+	var player : PlayerPuppet;
+	if( IsSafeStateForced( stateContext, scriptInterface ) )
+	{
+		return true;
+	}
+	player = ( ( PlayerPuppet )( scriptInterface.executionOwner ) );
+	if( !( player ) || !( player.ynkLowered ) )
+	{
+		return false;
+	}
+	if( ( IsPlayerInCombat( scriptInterface ) || ( scriptInterface.GetActionValue( 'RangedAttack' ) > 0.0 ) ) || ( scriptInterface.GetActionValue( 'CameraAim' ) > 0.0 ) )
+	{
+		player.YnkSetLowered( false );
+		return false;
+	}
+	return !( scriptInterface.localBlackboard.GetBool( GetAllBlackboardDefs().PlayerStateMachine.SceneAimForced ) ) && !( scriptInterface.localBlackboard.GetBool( GetAllBlackboardDefs().PlayerStateMachine.SceneSafeForced ) );
+}
+
+// Raise requested by this mod: also leaves the stance the game chose by itself in public zones.
+@wrapMethod(PublicSafeDecisions)
+function ToPublicSafeToReady( const stateContext : StateContext, const scriptInterface : StateGameScriptInterface ) : Bool
+{
+	var player : PlayerPuppet;
+	if( ToPublicSafeToReady( stateContext, scriptInterface ) )
+	{
+		return true;
+	}
+	player = ( ( PlayerPuppet )( scriptInterface.executionOwner ) );
+	return player && player.ynkReleaseRequested;
+}
+
+@postfix(PublicSafeToReadyEvents)
+function OnEnter( stateContext : StateContext, scriptInterface : StateGameScriptInterface )
+{
+	var player : PlayerPuppet = ( ( PlayerPuppet )( scriptInterface.executionOwner ) );
+	if( player )
+	{
+		player.ynkReleaseRequested = false;   // release done
+	}
+}
+
+// Every tick in Ready, after the game's own: pad listener, pending inspect, activity, auto-lower.
+@postfix(ReadyEvents)
+function OnTick( timeDelta : Float, stateContext : StateContext, scriptInterface : StateGameScriptInterface )
+{
+	var player : PlayerPuppet = ( ( PlayerPuppet )( scriptInterface.executionOwner ) );
+	var currentTime : Float;
+	if( !( player ) || !( IsRightWeaponLogic() ) )
+	{
+		return;
+	}
+	currentTime = player.YnkNow();
+	player.YnkEnsurePadListener();
+	player.ynkReleaseRequested = false;
+	if( ( IsPlayerInCombat( scriptInterface ) || ( scriptInterface.GetActionValue( 'RangedAttack' ) > 0.0 ) ) || ( scriptInterface.GetActionValue( 'CameraAim' ) > 0.0 ) )
+	{
+		player.ynkLastActive = currentTime;
+	}
+	// in public zones the game lowers an idle weapon after a second; hold it up during an inspect
+	if( player.YnkInspectPending() || ( currentTime < player.ynkHoldReadyUntil ) )
+	{
+		stateContext.SetPermanentFloatParameter( GetTurnOffPublicSafeTimeStamp(), currentTime, true );
+	}
+	if( player.ynkInspectRequestedAt > 0.0 )
+	{
+		if( ( currentTime - player.ynkInspectRequestedAt ) > YnkInspectTimeout() )
+		{
+			player.ynkInspectRequestedAt = 0.0;
+		}
+		else
+		{
+			if( GetInStateTime() >= YnkInspectDelay() )
+			{
+				scriptInterface.PushAnimationEvent( 'IdleBreak' );
+				player.ynkInspectRequestedAt = 0.0;
+				player.ynkHoldReadyUntil = currentTime + YnkInspectHold();
+				player.ynkLastActive = currentTime + 2.0;   // let the animation finish before auto-lower
+			}
+		}
+		return;
+	}
+	if( ( ( player.YnkAutoLower() && !( player.ynkLowered ) ) && ( GetInStateTime() >= YnkAutoLowerDelay() ) ) && ( ( currentTime - player.ynkLastActive ) >= YnkAutoLowerDelay() ) )
+	{
+		player.YnkSetLowered( true );
+	}
+}
