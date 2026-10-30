@@ -4,7 +4,7 @@ The order things happen at launch decides what you see. Work from the earliest s
 
 | Stage | If it fails you see | Evidence |
 |---|---|---|
-| 0. RED4ext loader (`bin\x64\winmm.dll`) | Game starts with no mods, **no log** | no `red4ext\logs` file at all |
+| 0. RED4ext loader (`bin\x64\winmm.dll`) | Game starts with no RED4ext mods and **no log** (tested: with `winmm.dll` removed the game launched and RED4ext wrote no new log) | no new file in `red4ext\logs` |
 | 1. RED4ext loads plugins | Game closes or hangs, no box | `red4ext\logs\red4ext-*.log` ends on a `Loading plugin from ...` line with no `has been loaded` after it |
 | 2. redscript compiles scripts | A box: **"REDScript compilation has failed"**, names the mod(s). Game then starts with **no script mods working** | `r6\logs\redscript_rCURRENT.log` has `[ERROR] [CODE] At <file>:<line>`; red4ext log has `scc invocation failed` |
 | 3. Game runs | Crash to desktop | `CrashInfo.json` (see below), Windows Application event log |
