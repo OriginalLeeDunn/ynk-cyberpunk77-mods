@@ -23,6 +23,9 @@ Game version: **Cyberpunk 2077 2.5**.
 | Tool | What it does | Latest | Nexus |
 |---|---|---|---|
 | [REDmod 2.5 Deploy Fix](tools/redmod-2.5-deploy-fix/) | Fixes REDmod deploy failing since 2.5 with `Imported classes (like 'ISerializable') must derive from something` | 1.0.0 | [36429](https://www.nexusmods.com/cyberpunk2077/mods/36429) |
+| [Mod Doctor](tools/cp77-mod-doctor/) | Read-only diagnostic for a modded game that won't start or broke after a patch (RED4ext/redscript logs, crash evidence, offline compile check). Early version | 0.1.0 | [36479](https://www.nexusmods.com/cyberpunk2077/mods/36479) |
+
+Also: the [modding handbook](docs/modding-handbook/), what we learned about launch failures, console script mods and testing in game (a work in progress).
 
 ## Installing a mod
 Download the zip from the mod's GitHub release or Nexus page and extract it into your
