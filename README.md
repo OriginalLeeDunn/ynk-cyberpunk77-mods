@@ -1,4 +1,4 @@
-# YNK Cyberpunk 2077 Mods
+﻿# YNK Cyberpunk 2077 Mods
 
 Cyberpunk 2077 mods by **YooNeqK**, from small TweakXL edits up to Lua, redscript and asset mods.
 Each mod lives in its own folder under [`mods/`](mods/) and is released on GitHub and Nexus Mods.
@@ -14,8 +14,8 @@ Each mod lives in its own folder under [`mods/`](mods/) and is released on GitHu
 | [YNK Native](mods/ynk-native/) | RED4ext C++ plugin: native functions for redscript (real-world clock) | RED4ext (C++) | RED4ext 1.31+, redscript 0.5.32+ | 0.1.0 | [36274](https://www.nexusmods.com/cyberpunk2077/mods/36274) |
 | [Weapon Inspect](mods/weapon-inspect/) | Inspect, lower or auto-lower the weapon in your hands with the game's own animations; keyboard and controller | CET Lua + redscript | CET 1.38+, redscript 0.5.32+ | 0.3.1 | [36225](https://www.nexusmods.com/cyberpunk2077/mods/36225) |
 | [Weapon Inspect (console edition)](mods/weapon-inspect-console/) | The same, controller-only, for mod.io: PC, PS5, Xbox Series X\|S, Switch 2 | mod.io script (native) | none | 1.0.0 | [mod.io](https://mod.io/g/cyberpunk-2077/m/ynk-weapon-inspect-console-edition) (pending review) |
-| [Canto Blueprint](mods/canto-blueprint/) | Adds the crafting spec for the missable Militech Canto Mk.6 cyberdeck (Blackwall Gateway), once per save | redscript | redscript 0.5.32+, Phantom Liberty | 1.0.0 | [36450](https://www.nexusmods.com/cyberpunk2077/mods/36450) |
-| [Canto Blueprint (console edition)](mods/canto-blueprint-console/) | The same for mod.io: PC, PS5, Xbox Series X\|S, Switch 2 | mod.io script (native) | Phantom Liberty | 1.0.0 | [mod.io](https://mod.io/g/cyberpunk-2077/m/ynk-canto-mk6-blueprint) (pending review) |
+| [Canto Blueprint](mods/canto-blueprint/) | Adds the crafting spec and a decoded Cerberus core for the missable Militech Canto Mk.6 cyberdeck (Blackwall Gateway), once per save | redscript | redscript 0.5.32+, Phantom Liberty | 1.1.0 | [36450](https://www.nexusmods.com/cyberpunk2077/mods/36450) |
+| [Canto Blueprint (console edition)](mods/canto-blueprint-console/) | The same for mod.io: PC, PS5, Xbox Series X\|S, Switch 2 | mod.io script (native) | Phantom Liberty | 1.1.0 | [mod.io](https://mod.io/g/cyberpunk-2077/m/ynk-canto-mk6-blueprint) (pending review) |
 
 Game version: **Cyberpunk 2077 2.5**.
 
@@ -53,3 +53,4 @@ what was AI-assisted.
 
 ## License
 [MIT](LICENSE). Credit is appreciated if you build on these mods.
+

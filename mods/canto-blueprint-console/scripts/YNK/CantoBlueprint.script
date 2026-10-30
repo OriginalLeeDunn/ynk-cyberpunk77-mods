@@ -1,17 +1,19 @@
-// YNK Canto Blueprint: gives you the crafting spec for the Militech Canto Mk.6 cyberdeck (Blackwall
-// Gateway) if you never got it. The game hands it out as a Phantom Liberty quest reward and it is
-// missable (side with Songbird in "Firestarter" and the blueprint is locked away), and consoles have no
-// way to add it. This adds the same recipe item the quest would have given, once, and you still craft the
-// deck yourself with the usual materials.
-// - Recipe tier follows the game's own rule for this reward: Rare below level 30, Epic 30-39, Legendary 40+.
-// - Runs once per save (a quest fact remembers it). Does nothing if the quest already gave you the recipe,
-//   if you already own the deck, or if Phantom Liberty isn't installed (it tries again next load).
-// - Console-safe: no frameworks, only wrap/postfix patches, nothing replaced. Every name is prefixed
-//   YnkCanto so it can never collide with another mod's added methods.
+// YNK Canto Blueprint (console edition): gives you what you need to build the Militech Canto Mk.6
+// cyberdeck (Blackwall Gateway) if you never got it. The game hands out the crafting spec and the decoded
+// Cerberus core as Phantom Liberty quest rewards, and both are missable (the core only exists on the Reed
+// route of "Firestarter", so siding with Songbird loses both), and consoles have no way to add them. This
+// adds, once each per save:
+// - the crafting spec (the same recipe item the quest gives), tier by the game's own rule: Rare below
+//   level 30, Epic 30-39, Legendary 40+;
+// - one decoded Cerberus core, only if you hold the Canto recipe and have no core, no deck and no Erebus
+//   (the core is shared with the Erebus SMG, so it stays one or the other).
+// You still craft the deck yourself with the components it costs. Does nothing without Phantom Liberty.
+// Console-safe: no frameworks, only wrap/postfix patches, nothing replaced. Every name is prefixed
+// YnkCanto so it can never collide with another mod's added methods.
 
 constexpr function YnkCantoDelay() : Float { return 8.0; }             // seconds after loading before the check
-constexpr function YnkCantoDoneFact() : CName { return 'ynk_canto_blueprint_done'; }  // 1 = handled for this save
-constexpr function YnkCantoDebug() : Bool { return false; }            // true shows a message for each skipped case
+constexpr function YnkCantoDoneFact() : CName { return 'ynk_canto_blueprint_done'; }  // 1 = spec handled for this save
+constexpr function YnkCantoCoreFact() : CName { return 'ynk_canto_core_done'; }       // 1 = core handled for this save
 
 class YnkCantoCallback extends DelayCallback
 {
@@ -42,67 +44,127 @@ function YnkCantoNotify( text : String )
 @addMethod(PlayerPuppet)
 function YnkCantoOwns( itemName : TweakDBID ) : Bool
 {
-	return GameInstance.GetTransactionSystem( GetGame() ).HasItem( this, ItemID.FromTDBID( itemName ) );
+	// by record, not by ItemID: weapons and decks carry a unique seed, so an ItemID built from the record never matches them
+	return GameInstance.GetTransactionSystem( GetGame() ).GetItemDataByTDBID( this, itemName ) != NULL;
+}
+
+@addMethod(PlayerPuppet)
+function YnkCantoOwnsRecipe() : Bool
+{
+	return YnkCantoOwns( T"Items.Recipe_Rare_HauntedCyberdeck" ) || YnkCantoOwns( T"Items.Recipe_Epic_HauntedCyberdeck" ) || YnkCantoOwns( T"Items.Recipe_Legendary_HauntedCyberdeck" );
+}
+
+@addMethod(PlayerPuppet)
+function YnkCantoOwnsDeck() : Bool
+{
+	return YnkCantoOwns( T"Items.HauntedCyberdeck_Rare" ) || YnkCantoOwns( T"Items.HauntedCyberdeck_Epic" ) || YnkCantoOwns( T"Items.HauntedCyberdeck_Legendary" );
+}
+
+// The Erebus SMG (internally the Haunted gun) uses the same core: owning it means that choice is made.
+@addMethod(PlayerPuppet)
+function YnkCantoOwnsErebus() : Bool
+{
+	return YnkCantoOwns( T"Items.Common_Borg4a_HauntedGun" ) || YnkCantoOwns( T"Items.Uncommon_Borg4a_HauntedGun" ) || YnkCantoOwns( T"Items.Rare_Borg4a_HauntedGun" ) || YnkCantoOwns( T"Items.Epic_Borg4a_HauntedGun" ) || YnkCantoOwns( T"Items.Legendary_Borg4a_HauntedGun" );
+}
+
+@addMethod(PlayerPuppet)
+function YnkCantoOwnsCore() : Bool
+{
+	return YnkCantoOwns( T"Items.Q305_Cerberus_core_cracked" ) || YnkCantoOwns( T"Items.Q305_Cerberus_core_uncracked" );
 }
 
 // Runs a few seconds after a save loads (or a new game starts).
 @addMethod(PlayerPuppet)
 function YnkCantoCheck()
 {
-	var quests : QuestsSystem = GameInstance.GetQuestsSystem( GetGame() );
+	var quests : QuestsSystem;
+	var transaction : TransactionSystem;
+	var gaveSpec : Bool;
+	var gaveCore : Bool;
+	var tier : String;
 	var level : Float;
 	var recipe : TweakDBID;
-	var tier : String;
 
-	if( quests.GetFact( YnkCantoDoneFact() ) > 0 )
-	{
-		return;
-	}
-	// no Phantom Liberty: the item doesn't exist, so do nothing and look again next load
+	// no Phantom Liberty: the items don't exist, so do nothing and look again next load
 	if( !( TweakDBInterface.GetItemRecord( T"Items.Recipe_Rare_HauntedCyberdeck" ) ) )
 	{
-		if( YnkCantoDebug() )
-		{
-			YnkCantoNotify( "Canto Blueprint: Phantom Liberty not found" );
-		}
 		return;
 	}
-	// the quest already gave the recipe, or the deck is already yours
-	if( quests.GetFact( 'haunted_deck_recipe_acquired' ) > 0
-		|| YnkCantoOwns( T"Items.Recipe_Rare_HauntedCyberdeck" ) || YnkCantoOwns( T"Items.Recipe_Epic_HauntedCyberdeck" ) || YnkCantoOwns( T"Items.Recipe_Legendary_HauntedCyberdeck" )
-		|| YnkCantoOwns( T"Items.HauntedCyberdeck_Rare" ) || YnkCantoOwns( T"Items.HauntedCyberdeck_Epic" ) || YnkCantoOwns( T"Items.HauntedCyberdeck_Legendary" ) )
-	{
-		quests.SetFact( YnkCantoDoneFact(), 1 );
-		if( YnkCantoDebug() )
-		{
-			YnkCantoNotify( "Canto Blueprint: you already have it" );
-		}
-		return;
-	}
+	quests = GameInstance.GetQuestsSystem( GetGame() );
+	transaction = GameInstance.GetTransactionSystem( GetGame() );
+	gaveSpec = false;
+	gaveCore = false;
+	tier = "Rare";
 
-	level = GameInstance.GetStatsSystem( GetGame() ).GetStatValue( GetEntityID(), gamedataStatType.Level );
-	if( level >= 40.0 )
+	// 1. the crafting spec
+	if( quests.GetFact( YnkCantoDoneFact() ) <= 0 )
 	{
-		recipe = T"Items.Recipe_Legendary_HauntedCyberdeck";
-		tier = "Legendary";
-	}
-	else
-	{
-		if( level >= 30.0 )
+		if( ( quests.GetFact( 'haunted_deck_recipe_acquired' ) > 0 ) || YnkCantoOwnsRecipe() || YnkCantoOwnsDeck() )
 		{
-			recipe = T"Items.Recipe_Epic_HauntedCyberdeck";
-			tier = "Epic";
+			quests.SetFact( YnkCantoDoneFact(), 1 );   // the quest already gave it, or the deck is yours
 		}
 		else
 		{
+			level = GameInstance.GetStatsSystem( GetGame() ).GetStatValue( GetEntityID(), gamedataStatType.Level );
 			recipe = T"Items.Recipe_Rare_HauntedCyberdeck";
-			tier = "Rare";
+			if( level >= 40.0 )
+			{
+				recipe = T"Items.Recipe_Legendary_HauntedCyberdeck";
+				tier = "Legendary";
+			}
+			else
+			{
+				if( level >= 30.0 )
+				{
+					recipe = T"Items.Recipe_Epic_HauntedCyberdeck";
+					tier = "Epic";
+				}
+			}
+			if( transaction.GiveItemByTDBID( this, recipe, 1 ) )
+			{
+				quests.SetFact( YnkCantoDoneFact(), 1 );
+				gaveSpec = true;
+			}
 		}
 	}
-	if( GameInstance.GetTransactionSystem( GetGame() ).GiveItemByTDBID( this, recipe, 1 ) )
+
+	// 2. the decoded Cerberus core (own flag, so players who got 1.0.0 still receive it)
+	if( quests.GetFact( YnkCantoCoreFact() ) <= 0 )
 	{
-		quests.SetFact( YnkCantoDoneFact(), 1 );
-		YnkCantoNotify( "Militech Canto Mk.6 crafting spec added (" + tier + ")" );
+		if( YnkCantoOwnsDeck() || YnkCantoOwnsErebus() || YnkCantoOwnsCore() )
+		{
+			quests.SetFact( YnkCantoCoreFact(), 1 );   // built it, chose the Erebus, or already holds a core
+		}
+		else
+		{
+			if( gaveSpec || YnkCantoOwnsRecipe() || ( quests.GetFact( 'haunted_deck_recipe_acquired' ) > 0 ) )
+			{
+				if( transaction.GiveItemByTDBID( this, T"Items.Q305_Cerberus_core_cracked", 1 ) )
+				{
+					quests.SetFact( YnkCantoCoreFact(), 1 );
+					gaveCore = true;
+				}
+			}
+		}
+	}
+
+	if( gaveSpec && gaveCore )
+	{
+		YnkCantoNotify( "Canto Mk.6 spec (" + tier + ") + core added" );
+	}
+	else
+	{
+		if( gaveSpec )
+		{
+			YnkCantoNotify( "Canto Mk.6 crafting spec added (" + tier + ")" );
+		}
+		else
+		{
+			if( gaveCore )
+			{
+				YnkCantoNotify( "Decoded Cerberus core added" );
+			}
+		}
 	}
 }
 
