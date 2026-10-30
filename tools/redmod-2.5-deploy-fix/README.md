@@ -48,6 +48,56 @@ If you run `redMod.exe` yourself, also pass
 `-rttiSchemaPath "<game>\tools\redmod\metadata.json"`: its default path is relative to the current
 folder, and from the wrong folder deploy can't find the type schema.
 
+## Manual fix (no script)
+Prefer not to run a script? The fix is three small edits you can make in Notepad (or any text editor), in
+`<game folder>\tools\redmod\scripts`. Copy each file somewhere safe first (that is your backup), make the
+edit, save, then deploy again. Search for the text rather than going by line numbers: they can differ
+slightly between REDmod versions. If a line doesn't look like the "before" text below, CDPR may have
+already fixed that file and you can leave it alone.
+
+**1. `cyberpunk\UI\inventory\inventoryItemMode.script`** (around line 696)
+
+Find `CreateItemChooser( itemCategoryList : ref< inkCompoundRef >,` and change it to:
+
+```
+CreateItemChooser( itemCategoryList : inkCompoundRef,
+```
+
+**2. `cyberpunk\UI\fullscreen\tarot\tarot_main.script`** (around line 169)
+
+Find `widgetRef : ref< inkCompoundRef > )` and change it to:
+
+```
+widgetRef : inkCompoundRef )
+```
+
+**3. `mods\codeware\callbackSystem.script`** (around lines 67-81)
+
+Delete these two blocks:
+
+```
+importonly abstract class ISerializable
+{
+}
+
+import abstract class CResource extends ISerializable
+{
+    import var cookingPlatform : ECookingPlatform;
+}
+```
+
+Then, inside `ResourceEvent`, delete the two lines `import var resource : CResource;` and
+`public import function GetResource() : CResource;` so that it reads:
+
+```
+import class ResourceEvent extends CallbackSystemEvent
+{
+    public import function GetPath() : ResRef;
+}
+```
+
+To undo, copy your backups back over the edited files. (These are exactly the edits the script makes.)
+
 ## Tested
 Cyberpunk 2077 2.5 (Steam), REDmod 2.5:
 - Deploy of a REDmod script mod fails before the fix and succeeds after it.
