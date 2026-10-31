@@ -9,7 +9,7 @@ mods in a temp folder (on a copy), and the game files are byte-for-byte the same
 
 ## Use it
 1. Close the game.
-2. Download `Doctor.ps1`, right-click it, *Run with PowerShell*. Or from PowerShell:
+2. Unpack the zip and double-click `Run-Doctor.bat`. The window stays open until you press Enter. Or from PowerShell:
    ```powershell
    .\Doctor.ps1                                   # finds the Steam / GOG / Epic install
    .\Doctor.ps1 -GamePath "D:\Games\Cyberpunk 2077"

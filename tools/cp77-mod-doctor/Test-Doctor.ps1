@@ -19,7 +19,7 @@ function Add-Red4ext([string]$g, [bool]$loader = $true) {
 function Add-Log([string]$g, [string[]]$lines) {
     Set-Content (Join-Path $g "red4ext\logs\red4ext-2026-01-01-00-00-00.log") $lines
 }
-function Run-Doctor([string]$g) { (& $doctor -GamePath $g *>&1 | Out-String) }
+function Run-Doctor([string]$g) { (& $doctor -GamePath $g -NoPause *>&1 | Out-String) }
 function Check([string]$case, [string]$out, [string[]]$must, [string[]]$mustNot = @()) {
     $bad = @()
     foreach ($m in $must) { if ($out -notmatch [regex]::Escape($m)) { $bad += "missing: $m" } }
