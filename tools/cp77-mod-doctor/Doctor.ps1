@@ -18,9 +18,12 @@
 param(
     [string]$GamePath,
     [switch]$Compile,
-    [string]$ReportPath
+    [string]$ReportPath,
+    [switch]$NoPause
 )
 $ErrorActionPreference = "Stop"
+function Wait-Close { if (-not $NoPause) { Write-Host ""; try { [void](Read-Host "Press Enter to close") } catch { } } }      # Run with PowerShell closes the window as soon as the script ends
+trap { Write-Host "`nERROR: $($_.Exception.Message)" -ForegroundColor Red; Wait-Close; exit 1 }
 $findings = New-Object System.Collections.ArrayList
 $script:log = New-Object System.Text.StringBuilder
 
@@ -68,7 +71,7 @@ if (-not $GamePath) { $GamePath = Find-Game }
 if (-not $GamePath) { $GamePath = Read-Host "Could not find Cyberpunk 2077. Enter the game folder (the one that contains bin\x64)" }
 $GamePath = $GamePath.Trim('"').TrimEnd('\')
 $exe = Join-Path $GamePath "bin\x64\Cyberpunk2077.exe"
-if (-not (Test-Path $exe)) { Write-Host "No bin\x64\Cyberpunk2077.exe under '$GamePath'." -ForegroundColor Red; exit 1 }
+if (-not (Test-Path $exe)) { Write-Host "No bin\x64\Cyberpunk2077.exe under '$GamePath'." -ForegroundColor Red; Wait-Close; exit 1 }
 
 Say "YNK Cyberpunk 2077 Mod Doctor" "Cyan"
 Say "Game folder: $GamePath"
@@ -347,3 +350,4 @@ if (-not $sorted) {
     }
 }
 if ($ReportPath) { Set-Content -Path $ReportPath -Value $script:log.ToString() -Encoding UTF8; Write-Host "`nReport saved to $ReportPath" -ForegroundColor Cyan }
+Wait-Close

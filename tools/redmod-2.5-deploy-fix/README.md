@@ -13,35 +13,43 @@ It isn't your mods. It happens with an empty test mod too. The script sources th
 
 | File | Problem | Fix |
 |---|---|---|
-| `mods\codeware\callbackSystem.script` | Declares the engine's root class `ISerializable` as an imported class with no parent; the compiler only allows that for `IScriptable`. Giving it a parent compiles but the game then refuses to start (`Native class 'ISerializable' has declared base class ... that is different`). | Removes the `ISerializable` and `CResource` declarations and the two `ResourceEvent` members that return a `CResource`. |
+| `mods\codeware\callbackSystem.script` | Declares the engine's root class `ISerializable` as an imported class with no parent; the compiler only allows that for `IScriptable`. | Gives it a parent so deploy succeeds. The game refuses to start with that parent, so the included RED4ext plugin clears it in the deployed scripts at every startup. |
 | `cyberpunk\UI\fullscreen\tarot\tarot_main.script` | Passes a `ref< inkCompoundRef >` parameter to `inkWidgetRef.Get` (`Unable to convert from '&script_ref<inkCompoundRef>' to 'inkWidgetRef'`). | Takes the parameter by value. An `inkCompoundRef` is a handle to a widget, so the copy refers to the same widget. |
 | `cyberpunk\UI\inventory\inventoryItemMode.script` | Same as above. | Same. |
 
-The only thing REDmod scripts lose is `ResourceEvent.GetResource()` / `.resource` (`GetPath()` stays).
-Nothing in the game's own scripts uses them.
+Nothing is removed, so REDmod script mods and redscript mods such as Codeware work together.
 
 **Compared with the workarounds going around:** turning off REDmod deployment, or copying the vanilla
 `final.redscripts` into `r6\cache\modded`, gets the game to start, but REDmod mods' script changes don't
 apply. This fixes the compile itself, so REDmod script mods work again.
 
+## Requirements
+- REDmod DLC.
+- RED4ext, for the full fix. Without it you get a REDmod-only fix that isn't compatible with redscript
+  mods. If you add RED4ext later, run the fix again.
+
 ## Use
-1. Download `Fix-REDmod-Deploy.ps1` from the [release](https://github.com/OriginalLeeDunn/ynk-cyberpunk77-mods/releases/tag/redmod-deploy-fix-v1.0.0)
-   or [Nexus Mods](https://www.nexusmods.com/cyberpunk2077/mods/36429).
-2. Right-click it > **Run with PowerShell**, or from a PowerShell window:
-   ```powershell
-   powershell -ExecutionPolicy Bypass -File .\Fix-REDmod-Deploy.ps1
-   ```
-   It finds Steam, GOG and Epic installs by itself. For another folder:
-   `-GamePath "D:\Games\Cyberpunk 2077"`.
+1. Close the game and unpack the whole zip into a folder of its own.
+2. Double-click `Run-Fix.bat`. The window stays open so you can read the result.
+   It finds Steam, GOG and Epic installs by itself. For another folder, from a command prompt:
+   `Run-Fix.bat -GamePath "D:\Games\Cyberpunk 2077"`.
 3. Deploy again from the launcher or your mod manager (Vortex, MO2).
 
-To undo: run it again with `-Undo`. It restores the original files from the `*.ynkfix-backup` copies
-it keeps next to each one.
+**Coming from 1.0.0:** do the same. 1.0.0 removed two classes that Codeware and other redscript mods need,
+which caused `class 'ISerializable' not found` and `class 'CResource' not found`. This version replaces
+that fix and removes the broken deployed scripts.
+
+To undo: `Run-Fix.bat -Undo` from a command prompt. It restores the originals, removes the plugin and clears
+`r6\cache\modded`.
+
+**Don't remove the plugin on its own.** With the full fix in place, the game won't start with REDmod scripts
+without it. Use `-Undo` instead.
 
 The script:
 - edits the files in place and ships no CDPR files;
 - backs up each file before changing it;
 - is safe to run twice (already-fixed files are skipped);
+- removes `r6\cache\modded` when the fix changes, because REDmod reuses it otherwise;
 - skips a file and warns if its contents don't match (for example, if CDPR fixes it in a later patch).
 
 If you run `redMod.exe` yourself, also pass
@@ -99,12 +107,16 @@ import class ResourceEvent extends CallbackSystemEvent
 To undo, copy your backups back over the edited files. (These are exactly the edits the script makes.)
 
 ## Tested
-Cyberpunk 2077 2.5 (Steam), REDmod 2.5:
-- Deploy of a REDmod script mod fails before the fix and succeeds after it.
-- With mods enabled (`-modded`), the game reaches the main menu and loads a save.
-- A REDmod test mod that overrides `player.script` and adds a new class runs in-game: its on-screen
-  message appears after the save loads.
-- `-Undo` restores files identical to the originals; running the fix twice changes nothing.
+Cyberpunk 2077 2.5 (Steam), REDmod 2.5, RED4ext 1.31, redscript 0.5.32, Codeware 1.21.1, ArchiveXL, TweakXL, in the running game:
+- A REDmod script mod and a redscript mod both run in the same session; 0 redscript errors; a save loads.
+- Upgrade from 1.0.0, repeat launches, redeploying a changed mod, and launching without `-modded`.
+- An empty, cut-off or random `final.redscripts` is left untouched and logged, and the game still runs.
+- A read-only `final.redscripts` shows an explanation.
+- `-Undo` restores files identical to the originals.
+- REDmod-only mode deploys without RED4ext, and running again after adding RED4ext switches to the full fix.
+
+Not tested: Epic and GOG installs, large mod lists, and `ResourceEvent.GetResource()` on a live event.
 
 ## Changelog
+- **2.0.0**: fixes redscript and Codeware mods breaking after 1.0.0. Adds the `ynk_redmod_bridge` RED4ext plugin, `Run-Fix.bat`, and a pause so the window stays open.
 - **1.0.0**: first release.
