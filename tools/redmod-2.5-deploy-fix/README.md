@@ -81,30 +81,29 @@ widgetRef : inkCompoundRef )
 
 **3. `mods\codeware\callbackSystem.script`** (around lines 67-81)
 
-Delete these two blocks:
+Find this line:
 
 ```
 importonly abstract class ISerializable
-{
-}
-
-import abstract class CResource extends ISerializable
-{
-    import var cookingPlatform : ECookingPlatform;
-}
 ```
 
-Then, inside `ResourceEvent`, delete the two lines `import var resource : CResource;` and
-`public import function GetResource() : CResource;` so that it reads:
+and change it to:
 
 ```
-import class ResourceEvent extends CallbackSystemEvent
-{
-    public import function GetPath() : ResRef;
-}
+importonly abstract class ISerializable extends IScriptable
 ```
 
-To undo, copy your backups back over the edited files. (These are exactly the edits the script makes.)
+**4. Plugin.** Copy the zip's `red4ext` folder into your game folder, so that
+`red4ext\plugins\ynk_redmod_bridge\ynk_redmod_bridge.dll` exists. The game won't start with REDmod scripts
+without it.
+
+**5.** Delete the `r6\cache\modded` folder, then deploy again.
+
+**If you made the 1.0.0 manual edits,** restore your backup of `callbackSystem.script` first: the deleted
+blocks need to be back.
+
+To undo, copy your backups back over the edited files, then delete `red4ext\plugins\ynk_redmod_bridge` and
+`r6\cache\modded`.
 
 ## Tested
 Cyberpunk 2077 2.5 (Steam), REDmod 2.5, RED4ext 1.31, redscript 0.5.32, Codeware 1.21.1, ArchiveXL, TweakXL, in the running game:
@@ -118,5 +117,6 @@ Cyberpunk 2077 2.5 (Steam), REDmod 2.5, RED4ext 1.31, redscript 0.5.32, Codeware
 Not tested: Epic and GOG installs, large mod lists, and `ResourceEvent.GetResource()` on a live event.
 
 ## Changelog
+- **2.0.1**: corrects the manual steps in this README. The script and plugin are unchanged from 2.0.0.
 - **2.0.0**: fixes redscript and Codeware mods breaking after 1.0.0. Adds the `ynk_redmod_bridge` RED4ext plugin, `Run-Fix.bat`, and a pause so the window stays open.
 - **1.0.0**: first release.
