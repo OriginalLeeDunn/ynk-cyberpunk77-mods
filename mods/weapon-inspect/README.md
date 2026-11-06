@@ -1,15 +1,16 @@
 # YNK Weapon Inspect
 
-Press a key to inspect the weapon in your hands. V plays the game's own "idle break" animation, the
-one they do by themselves after standing still for about 20 seconds, so every weapon uses its own
-vanilla move and nothing new is added to the game. A second key lowers the weapon into the game's
+Press a key to inspect the weapon in your hands. With a gun V plays the game's own "idle break"
+animation, the one they do by themselves after standing still for about 20 seconds. With a melee
+weapon V replays the weapon's first-equip flourish (the knife toss, the katana twirl). Both are
+the game's own animations, so nothing new is added to the game. A second key lowers the weapon into the game's
 own "safe" stance, an optional auto-lower does it for you when you're idle, and it works on
 controller too. Requested in the comments of [YNK Weapon Inspector](../weapon-inspector/).
 
-- **Version:** 0.3.1
+- **Version:** 0.4.0
 - **Game:** Cyberpunk 2077 2.5 (Phantom Liberty not required)
 - **Requires:** [Cyber Engine Tweaks](https://github.com/maximegmd/CyberEngineTweaks) 1.38+ and [redscript](https://github.com/jac3km4/redscript) 0.5.32+
-- **Download:** [Nexus Mods](https://www.nexusmods.com/cyberpunk2077/mods/36225) or [GitHub release](https://github.com/OriginalLeeDunn/ynk-cyberpunk77-mods/releases/tag/weapon-inspect-v0.3.1)
+- **Download:** [Nexus Mods](https://www.nexusmods.com/cyberpunk2077/mods/36225) or [GitHub release](https://github.com/OriginalLeeDunn/ynk-cyberpunk77-mods/releases/tag/weapon-inspect-v0.4.0)
 
 > **Keyboard keys start unbound.** In game, open the Cyber Engine Tweaks overlay, go to
 > **Bindings > YNK Weapon Inspect** and set **Inspect weapon** to a key (see [Install](#install)).
@@ -36,9 +37,20 @@ game's quick save and quick load.
 - **Controller:** double-tap **D-pad Down** for lower / inspect. A single tap still cycles your
   tracked objective as usual. (Holding D-pad Down is the phone, so the mod leaves holds alone.)
 
-Tested on pistols, assault rifles and katanas; some weapons (shotguns, for example) have a subtler
-idle move. A short cooldown stops repeated presses from restarting the animation. Nothing happens
-with no weapon drawn or in photo mode.
+**Guns** play the idle-break animation, which the game only plays while V stands still. If you press
+the key while moving, crouched or sprinting, the inspect waits and plays about two seconds after
+you stand still (a request that hasn't played after 10 seconds is dropped, so it never fires much
+later). Some weapons (shotguns, for example) have a subtler idle move.
+
+**Melee weapons** (knife, katana, baseball bat, hammer, machete, baton ...) have no idle-break
+animation in the game, so the mod holsters the weapon and draws the same weapon again with its
+first-equip animation. This only works out of combat. It is skipped in combat, for fists, and for
+cyberware melee (Mantis Blades, Gorilla Arms, Monowire), which have no such animation. Pressing the
+key again while the redraw is running is ignored. If the draw can't complete, the weapon is put
+back in your hands.
+
+A short cooldown stops repeated presses from restarting the animation. Nothing happens with no
+weapon drawn or in photo mode.
 
 **With Always First Equip:** that mod also lowers and raises the weapon. When it is installed,
 Weapon Inspect uses its lowered state instead of keeping a second one, so the two don't fight.
@@ -65,6 +77,13 @@ When Always First Equip is installed (detected at script compile time with
 and leaves its safe-state hooks alone. The controller double-tap is read by the player's own input
 listener (`OnAction`, action `CycleObjectives`).
 
+The melee state machine never runs `ReadyEvents`, and `player_melee.animgraph` only reacts to
+Attack, Block, Deflect, Hit, Jump, Land and similar events, so there is nothing to push for an
+inspect. The first-equip animation is the only showy melee clip: the equipment system plays it when
+a weapon is drawn with `gameEquipAnimationType.FirstEquip`. A melee inspect therefore sends an
+`UnequipWeapon` request, polls until the right-hand slot is empty (3 s limit), and queues a
+`DrawItemRequest` for the same item with `FirstEquip`.
+
 ## How AI was used
 Made with an AI coding assistant (Claude, through Claude Code). **AI:** found the idle-break event,
 the safe stances and how Always First Equip hooks them, wrote the Lua and redscript and this README,
@@ -74,6 +93,11 @@ and drove the test game.
 the game's own.
 
 ## Changelog
+- **0.4.0** Melee weapons now inspect: the game's melee animation graph has no idle-break event
+  (that is why the key did nothing on knives, katanas, bats, hammers, machetes and batons), so the
+  weapon is holstered and drawn again with its first-equip flourish, out of combat. Inspecting while
+  moving, crouched or sprinting no longer fails: the request waits until V stands still (up to 10 s)
+  and then plays. Reported by several users on game 2.5.
 - **0.3.1** Fixes "can't coerce 'Void' into 'Bool'" (redscript compilation failed) when another mod also
   wraps `PlayerPuppet.OnGameAttached` without a return type. Reported by 235francis.
 - **0.3.0** Fixes raising the weapon in public areas (the second press now raises and inspects), the
